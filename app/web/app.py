@@ -1,9 +1,18 @@
-from aiohttp.web import Application as AiohttpApplication, run_app as aiohttp_run_app, View as AiohttpView, Request as AiohttpRequest
+from typing import Optional
 
+from aiohttp.web import Application as AiohttpApplication, run_app as aiohttp_run_app, View as AiohttpView, Request as AiohttpRequest
+from aiohttp_apispec import setup_aiohttp_apispec
+
+from app.store import setup_accessors
+from app.store.crm.accessor import CrmAccessor
+from app.web.config import Config, setup_config
+from app.web.middlewares import setup_middlewares
 from app.web.routes import setup_routes
 
 class Application(AiohttpApplication):
-    datetime: dict = {}
+    config: Optional[Config] = None
+    database: dict = {}
+    crmaccessor: Optional[CrmAccessor] = None
 
 
 class Request(AiohttpRequest):
@@ -21,5 +30,9 @@ class View(AiohttpView):
 app = Application()
 
 def run_app():
+    setup_config(app)
     setup_routes(app)
+    setup_aiohttp_apispec(app, title='CRM Application', url='/docs/json', swagger_path='/docs/')
+    setup_middlewares(app)
+    setup_accessors(app)
     aiohttp_run_app(app)
