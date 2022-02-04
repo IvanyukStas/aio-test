@@ -31,3 +31,7 @@ def check_basic_auth(raw_credentials: str, username: str, password: str)->bool:
     if not len(parts) == 2:
         return False
     return parts[0] == username and parts[1] == password
+
+
+def check_validation_for_answers(aswers:list):
+    pass
